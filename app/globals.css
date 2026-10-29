@@ -1,0 +1,335 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Theme tokens: light (colourful sage) and dark (black / green / gold) ---------- */
+:root {
+  color-scheme: light;
+  --ink: 17 24 39;
+  --muted: 75 85 99;
+  --sage: 234 242 236;
+  --sage-soft: 224 235 227;
+  --gold: 154 116 36;
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(16, 185, 129, 0.2);
+  --panel: rgba(255, 255, 255, 0.55);
+  --track: rgba(0, 0, 0, 0.1);
+  --card-base: #ffffff;
+  --card-shadow: 0 1px 2px rgba(17, 24, 39, 0.04), 0 8px 30px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --ring-start: rgba(255, 255, 255, 0.95);
+  --page-bg: linear-gradient(135deg, #e6f3ea 0%, #e4f0f6 35%, #efe9f7 68%, #f6efe6 100%);
+  --accent: 21 128 61;
+  --accent2: 13 148 136;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: 232 238 252;
+  --muted: 148 163 190;
+  --sage: 4 14 28;
+  --sage-soft: 6 22 40;
+  --gold: 96 165 250;
+  --glass: rgba(130, 170, 255, 0.045);
+  --glass-border: rgba(125, 170, 255, 0.16);
+  --panel: rgba(130, 170, 255, 0.05);
+  --track: rgba(255, 255, 255, 0.1);
+  --card-base: #0a1226;
+  --card-shadow: 0 10px 34px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(160, 190, 255, 0.08);
+  --ring-start: rgba(160, 200, 255, 0.3);
+  --page-bg: radial-gradient(ellipse 80% 55% at 8% 0%, rgba(24, 132, 166, 0.42), transparent 65%), radial-gradient(ellipse 60% 50% at 96% 0%, rgba(80, 80, 200, 0.26), transparent 60%), linear-gradient(170deg, #06263a 0%, #051b2f 45%, #030c18 100%);
+  --accent: 34 211 238;
+  --accent2: 129 140 248;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+  /* The page colour lives on <html> (the canvas root). <body> must stay transparent:
+     an opaque body background would paint over the fixed, negative z-index background layers. */
+  background-color: rgb(var(--sage));
+  background-image: var(--page-bg);
+  background-attachment: fixed;
+}
+
+body {
+  overflow-x: clip;
+  background: transparent;
+  @apply font-sans text-ink antialiased;
+}
+
+/* Custom reticle cursor replaces the system cursor (only set when CustomCursor mounts) */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+::selection {
+  background: rgb(var(--accent) / 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply relative isolate rounded-2xl border border-glass bg-glass backdrop-blur-sm;
+    box-shadow: var(--card-shadow);
+    transition:
+      border-color 0.35s ease,
+      box-shadow 0.35s ease,
+      transform 0.3s ease;
+  }
+  /* Crisp gradient border highlight. */
+  .glass-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: linear-gradient(135deg, var(--ring-start), rgb(var(--accent) / 0.32) 45%, rgb(var(--accent2) / 0.1));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+  /* Hover/focus: a solid fill that completely covers the card (not just an edge glow). */
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    background: color-mix(in srgb, rgb(var(--accent)) 14%, var(--card-base));
+  }
+  .glass-card:hover,
+  .glass-card:focus-within {
+    border-color: rgb(var(--accent) / 0.55);
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 14px 40px rgb(var(--accent) / 0.2),
+      0 0 30px rgb(var(--accent) / 0.14);
+  }
+  .glass-card:hover::before,
+  .glass-card:focus-within::before {
+    opacity: 1;
+  }
+  .section {
+    @apply relative mx-auto max-w-6xl px-6 py-16 sm:py-20 lg:py-24 2xl:max-w-7xl min-[1920px]:max-w-[90rem];
+  }
+  .section-label {
+    @apply font-mono text-sm uppercase tracking-widest text-matrix;
+  }
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(var(--accent));
+  }
+  .display-heading {
+    @apply font-sans text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl;
+  }
+}
+
+/* Phones: no backdrop blur over the animated background (it forces a re-blur every frame). */
+@media (max-width: 767px) {
+  .glass-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Never let long words overflow their card. */
+h1, h2, h3, h4, p, li, a, span {
+  overflow-wrap: break-word;
+}
+
+/* Ultra-wide monitors: scale the whole rem-based UI up a notch. */
+@media (min-width: 2200px) {
+  html {
+    font-size: 18px;
+  }
+}
+@media (min-width: 3000px) {
+  html {
+    font-size: 21px;
+  }
+}
+
+/* Light theme: each section gets its own colour pair. Dark theme keeps the green + gold of the design. */
+#hero { --accent: 124 58 237; --accent2: 219 39 119; }
+#about { --accent: 13 148 136; --accent2: 37 99 235; }
+#skills { --accent: 37 99 235; --accent2: 124 58 237; }
+#experience { --accent: 124 58 237; --accent2: 219 39 119; }
+#projects { --accent: 225 29 72; --accent2: 217 119 6; }
+#research { --accent: 180 83 9; --accent2: 225 29 72; }
+#publications { --accent: 14 116 144; --accent2: 37 99 235; }
+#leadership { --accent: 194 65 12; --accent2: 217 119 6; }
+#contact { --accent: 21 128 61; --accent2: 37 99 235; }
+[data-theme="dark"] #hero,
+[data-theme="dark"] #about,
+[data-theme="dark"] #skills,
+[data-theme="dark"] #experience,
+[data-theme="dark"] #projects,
+[data-theme="dark"] #research,
+[data-theme="dark"] #publications,
+[data-theme="dark"] #leadership,
+[data-theme="dark"] #contact {
+  --accent: 34 211 238;
+  --accent2: 129 140 248;
+}
+
+/* Dark theme: solid buttons use dark text on the bright green / gold fills. */
+[data-theme="dark"] .text-white,
+[data-theme="dark"] .hover\:text-white:hover {
+  color: #04060f;
+}
+
+/* Gradient underline beneath every section title */
+.section h2:first-of-type::after {
+  content: "";
+  display: block;
+  width: 4rem;
+  height: 4px;
+  margin-top: 0.75rem;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent2)));
+}
+
+/* ---------- Dark backdrop: fine grid + vignette (the wireframe mesh is drawn on the canvas) ---------- */
+.dark-grid {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  pointer-events: none;
+  background-image: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+}
+.dark-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    conic-gradient(from 100deg at 0% -4%, transparent 0deg, rgba(150, 230, 255, 0.07) 6deg, rgba(150, 230, 255, 0.2) 17deg, rgba(150, 230, 255, 0.07) 28deg, transparent 34deg),
+    conic-gradient(from 226deg at 100% -4%, transparent 0deg, rgba(170, 160, 255, 0.06) 6deg, rgba(170, 160, 255, 0.18) 17deg, rgba(170, 160, 255, 0.06) 28deg, transparent 34deg),
+    radial-gradient(circle at 0% 0%, rgba(150, 230, 255, 0.28), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(170, 160, 255, 0.22), transparent 32%);
+  animation: spot-breathe 9s ease-in-out infinite alternate;
+}
+@keyframes spot-breathe {
+  from { opacity: 0.65; }
+  to { opacity: 1; }
+}
+[data-theme="dark"] .dark-grid {
+  display: block;
+}
+
+/* ---------- Hero panels ---------- */
+.hero-frame {
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(17, 24, 39, 0.05), 0 24px 60px rgba(124, 58, 237, 0.22);
+}
+.hero-left {
+  background: linear-gradient(to bottom, #c9b6fb, #a78bf2);
+}
+.hero-rays {
+  background: repeating-conic-gradient(from 0deg at 50% 58%, rgba(255, 255, 255, 0.38) 0deg 7deg, transparent 7deg 16deg);
+  opacity: 0.7;
+}
+.hero-dots {
+  background-image: radial-gradient(circle, rgba(109, 40, 217, 0.55) 1.8px, transparent 2.2px);
+  background-size: 15px 15px;
+  -webkit-mask-image: radial-gradient(ellipse at 85% 10%, #000 5%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 85% 10%, #000 5%, transparent 75%);
+}
+.hero-right {
+  background: linear-gradient(to bottom right, #f4f0ff, #e6defd);
+}
+[data-theme="dark"] .hero-frame {
+  border-color: rgba(125, 170, 255, 0.18);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6), 0 0 60px rgba(34, 211, 238, 0.1);
+  background: rgba(6, 10, 26, 0.35);
+}
+[data-theme="dark"] .hero-left {
+  background: linear-gradient(160deg, rgba(20, 40, 90, 0.5), rgba(8, 12, 30, 0.45));
+}
+[data-theme="dark"] .hero-rays {
+  background: repeating-conic-gradient(from 0deg at 50% 58%, rgba(96, 165, 250, 0.1) 0deg 7deg, transparent 7deg 16deg);
+  opacity: 1;
+}
+[data-theme="dark"] .hero-dots {
+  background-image: radial-gradient(circle, rgba(129, 140, 248, 0.5) 1.6px, transparent 2px);
+}
+[data-theme="dark"] .hero-right {
+  background: linear-gradient(to bottom right, rgba(12, 20, 46, 0.7), rgba(8, 12, 28, 0.7));
+}
+
+/* ---------- Dark theme: recolour hard-coded SVG diagram colours to cyan / violet ---------- */
+[data-theme="dark"] svg [stroke="#15803d"],
+[data-theme="dark"] svg [stroke="#16a34a"] { stroke: #22d3ee; }
+[data-theme="dark"] svg [fill="#15803d"],
+[data-theme="dark"] svg [fill="#16a34a"] { fill: #22d3ee; }
+[data-theme="dark"] svg [stroke="#9a7424"] { stroke: #a78bfa; }
+[data-theme="dark"] svg [fill="#9a7424"] { fill: #a78bfa; }
+[data-theme="dark"] svg [stroke="#14532d"] { stroke: #67e8f9; }
+
+/* ---------- Section backdrops (dark theme only) ---------- */
+.backdrop-full {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.about-glow {
+  background: radial-gradient(ellipse 55% 80% at 0% 50%, rgba(56, 130, 246, 0.2), transparent 70%);
+}
+.about-binary {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: 0.35em;
+  color: rgba(96, 165, 250, 0.55);
+  white-space: pre;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 35%, #000 65%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 25%, #000 75%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 0%, #000 35%, #000 65%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 25%, #000 75%, transparent 100%);
+  mask-composite: intersect;
+  opacity: 0.35;
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--r, 0deg)); }
+}
+.float-slow {
+  animation: float-y 7s ease-in-out infinite;
+}
+
+/* Projects: dark glass cards get a subtle grid texture + blue glow border */
+[data-theme="dark"] #projects .glass-card {
+  background-image:
+    linear-gradient(rgba(120, 170, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 170, 255, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5), 0 0 22px rgba(56, 130, 246, 0.14), inset 0 1px 0 rgba(160, 190, 255, 0.08);
+}
+
+/* Background canvases ease in instead of popping into view on load. */
+@keyframes bg-fade {
+  from { opacity: 0; }
+}
+.bg-fade-in {
+  animation: bg-fade 1.6s ease-out backwards;
+}
