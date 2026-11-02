@@ -118,7 +118,7 @@ export default function Navbar() {
                   href={`#${id}`}
                   onClick={(e) => jump(e, id)}
                   aria-current={active === id ? "true" : undefined}
-                  className={`relative rounded-md px-3 py-2 text-sm transition-colors hover:text-ink ${
+                  className={`relative inline-block rounded-md px-3 py-2 text-sm transition-colors hover:bg-matrix hover:text-white ${
                     active === id ? "text-ink" : "text-muted"
                   }`}
                 >

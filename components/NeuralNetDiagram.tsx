@@ -47,8 +47,11 @@ export default function NeuralNetDiagram() {
     const ctx = canvas.getContext("2d")!;
     const slow = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.4 : 1;
     let w = 0, h = 0, raf = 0, visible = true, last = 0, clock = 0;
-    let yaw = -0.35;
+    const YAW0 = -0.35;
+    let yaw = YAW0;
+    let pitch = PITCH;
     let hover = false;
+    let drag: { x: number; y: number } | null = null;
 
     // topology + 3D positions (world units). Nodes zig-zag in depth so the network has volume when it turns.
     const start: number[] = [];
@@ -93,8 +96,30 @@ export default function NeuralNetDiagram() {
     ro.observe(canvas);
     const onEnter = () => (hover = true);
     const onLeave = () => (hover = false);
+    const onDown = (e: PointerEvent) => {
+      drag = { x: e.clientX, y: e.clientY };
+      canvas.setPointerCapture(e.pointerId);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!drag) return;
+      yaw += (e.clientX - drag.x) * 0.008;
+      pitch = Math.max(-0.9, Math.min(0.9, pitch + (e.clientY - drag.y) * 0.005));
+      drag = { x: e.clientX, y: e.clientY };
+    };
+    const onUp = () => {
+      drag = null;
+    };
+    const onReset = () => {
+      yaw = YAW0;
+      pitch = PITCH;
+    };
     canvas.addEventListener("pointerenter", onEnter);
     canvas.addEventListener("pointerleave", onLeave);
+    canvas.addEventListener("pointerdown", onDown);
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onUp);
+    canvas.addEventListener("dblclick", onReset);
 
     const arrow = (x: number, y: number, ang: number, size: number) => {
       ctx.beginPath();
@@ -113,7 +138,7 @@ export default function NeuralNetDiagram() {
       const dt = Math.min((now - last) / 1000 || 0.016, 0.05) * slow;
       last = now;
       clock += dt;
-      yaw += SPIN * dt * (hover ? 0.3 : 1); // keeps turning; slows down while hovered so it can be read
+      if (!drag) yaw += SPIN * dt * (hover ? 0.3 : 1); // keeps turning; slows while hovered, holds while dragged
       const dark = document.documentElement.dataset.theme !== "light";
       const P = palette(dark);
 
@@ -139,12 +164,13 @@ export default function NeuralNetDiagram() {
       const sig = forward ? P.fwd : P.bwd;
 
       // projection
-      ctx.clearRect(0, 0, w, h);
-      const S = Math.max(40, Math.min(w / 2 - 34, (h / 2 - 50) / 0.95));
+      // Clear by device pixels: with fractional widths, clearing (w, h) leaves the last column half-erased.
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const S =Math.max(40, Math.min(w / 2 - 34, (h / 2 - 50) / 0.95));
       const cx = w / 2;
       const cy = h / 2 + 8;
       const cyw = Math.cos(yaw), syw = Math.sin(yaw);
-      const cp = Math.cos(PITCH), sp = Math.sin(PITCH);
+      const cp = Math.cos(pitch), sp = Math.sin(pitch);
       const pts = world.map((v, k) => {
         const by = v.y + Math.cos(clock * 0.7 + phase[k]) * 0.025;
         const x1 = v.x * cyw + v.z * syw;
@@ -281,6 +307,11 @@ export default function NeuralNetDiagram() {
       ro.disconnect();
       canvas.removeEventListener("pointerenter", onEnter);
       canvas.removeEventListener("pointerleave", onLeave);
+      canvas.removeEventListener("pointerdown", onDown);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerup", onUp);
+      canvas.removeEventListener("pointercancel", onUp);
+      canvas.removeEventListener("dblclick", onReset);
     };
   }, []);
 
@@ -289,7 +320,7 @@ export default function NeuralNetDiagram() {
       ref={ref}
       role="img"
       aria-label="Animated 3D neural network rotating 360 degrees: input layer, three hidden layers and an output layer, with signals flowing forward and backpropagating"
-      className="absolute inset-0 h-full w-full"
+      className="absolute inset-0 h-full w-full touch-pan-y"
     />
   );
 }

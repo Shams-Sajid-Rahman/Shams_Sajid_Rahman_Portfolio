@@ -21,7 +21,7 @@ export default function RotatingTitle({ className = "" }: { className?: string }
   }, []);
 
   return (
-    <div className={`relative min-h-[2.75rem] ${className}`}>
+    <div className={`relative min-h-[3.5rem] ${className}`}>
       {/* the animated text is decorative; screen readers get the full list once */}
       <span className="sr-only">{TITLES.join(", ")}</span>
       <AnimatePresence mode="wait">
@@ -32,10 +32,9 @@ export default function RotatingTitle({ className = "" }: { className?: string }
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
-          className="font-mono text-sm font-medium leading-snug text-matrix"
+          className="text-xl font-semibold leading-snug"
         >
-          <span className="text-muted">&gt; </span>
-          {TITLES[i]}
+          <span className="bg-gradient-to-r from-matrix to-accent2 bg-clip-text text-transparent">{TITLES[i]}</span>
           <span className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] animate-pulse bg-matrix" />
         </motion.p>
       </AnimatePresence>

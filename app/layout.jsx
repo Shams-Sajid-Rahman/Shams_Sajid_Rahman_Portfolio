@@ -3,6 +3,7 @@ import "./globals.css";
 import "lenis/dist/lenis.css";
 import BinaryRain from "@/components/BinaryRain";
 import CustomCursor from "@/components/CustomCursor";
+import Footer from "@/components/Footer";
 import InteractiveBackground from "@/components/InteractiveBackground";
 import MotionProvider from "@/components/MotionProvider";
 import Navbar from "@/components/Navbar";
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
           <InteractiveBackground />
           <Navbar />
           <main>{children}</main>
+          <Footer />
         </MotionProvider>
       </body>
     </html>

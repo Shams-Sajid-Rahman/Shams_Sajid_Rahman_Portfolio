@@ -2,7 +2,7 @@ export const PROFILE = {
   name: "Shams Sajid Rahman",
   headline: "Computer Science & Engineering Graduate | Building at the frontier of AI & Software",
   location: "Dhaka Cantonment, Dhaka-1206, Bangladesh",
-  city: "Dhaka, Bangladesh",
+  city: "Dhaka Cantonment, Dhaka, Bangladesh",
   lat: 23.81,
   lon: 90.41,
   timeZone: "Asia/Dhaka",

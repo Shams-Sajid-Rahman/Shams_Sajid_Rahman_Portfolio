@@ -72,17 +72,22 @@ export default function CustomCursor() {
     };
     raf = requestAnimationFrame(tick);
 
+    const retarget = (el: Element | null) => {
+      target = el?.closest?.(INTERACTIVE) ?? null;
+      const r = target?.getBoundingClientRect();
+      setActive(!!target);
+      setWrapped(!!r && r.width <= MAX_W && r.height <= MAX_H);
+    };
     const move = (e: PointerEvent) => {
       px = e.clientX;
       py = e.clientY;
       x.set(px);
       y.set(py);
       setVisible(true);
-      target = (e.target as Element | null)?.closest?.(INTERACTIVE) ?? null;
-      const r = target?.getBoundingClientRect();
-      setActive(!!target);
-      setWrapped(!!r && r.width <= MAX_W && r.height <= MAX_H);
+      retarget(e.target as Element | null);
     };
+    // Scrolling moves elements under a still pointer, so look again instead of staying stuck on the old one.
+    const onScroll = () => retarget(document.elementFromPoint(px, py));
     const down = () => setPressed(true);
     const up = () => setPressed(false);
     const leave = () => {
@@ -91,6 +96,7 @@ export default function CustomCursor() {
     };
 
     window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointerdown", down);
     window.addEventListener("pointerup", up);
     document.documentElement.addEventListener("pointerleave", leave);
@@ -98,6 +104,7 @@ export default function CustomCursor() {
       cancelAnimationFrame(raf);
       document.documentElement.classList.remove("has-custom-cursor");
       window.removeEventListener("pointermove", move);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointerdown", down);
       window.removeEventListener("pointerup", up);
       document.documentElement.removeEventListener("pointerleave", leave);

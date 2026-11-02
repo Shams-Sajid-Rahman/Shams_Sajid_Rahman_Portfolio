@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { slideIn } from "@/lib/motion";
+import CountUp from "./CountUp";
 import { Braces, Brain, Database, FlaskConical, Layers, type LucideIcon } from "lucide-react";
 
 type Category = { name: string; short: string; icon: LucideIcon; rgb: string; skills: string[] };
@@ -83,25 +84,26 @@ const CATEGORIES: Category[] = [
 
 // Figures taken from the research and project write-ups.
 const DEEP_LEARNING = [
-  { label: "MRI images benchmarked", value: "89,955" },
-  { label: "Architectures compared", value: "5" },
-  { label: "Real-world robustness (DeepCNN-SE-CBAM)", value: "91%" },
-  { label: "Video-caption pairs (MedT2V)", value: "55,000" },
+  { label: "MRI images benchmarked", value: 89955 },
+  { label: "Architectures compared", value: 5 },
+  { label: "Real-world robustness (DeepCNN-SE-CBAM)", value: 91, suffix: "%" },
+  { label: "Video-caption pairs (MedT2V)", value: 55000 },
 ];
 
 const ENGINEERING = [
-  { label: "REST endpoints (RBAC API)", value: "55+" },
-  { label: "API modules", value: "9" },
-  { label: "Automated Jest/Supertest tests", value: "69" },
-  { label: "Regression algorithms benchmarked", value: "6" },
+  { label: "REST endpoints (RBAC API)", value: 55, suffix: "+" },
+  { label: "API modules", value: 9 },
+  { label: "Automated Jest/Supertest tests", value: 69 },
+  { label: "Regression algorithms benchmarked", value: 6 },
 ];
 
-function StatRow({ label, value }: { label: string; value: string }) {
+function StatRow({ label, value, suffix }: { label: string; value: number; suffix?: string }) {
   return (
     <div className="group flex items-baseline justify-between gap-4 border-b border-glass pb-3 last:border-0 last:pb-0">
       <span className="text-sm text-muted transition group-hover:text-ink">{label}</span>
       <span className="font-mono text-lg font-bold text-gold transition group-hover:text-matrix group-hover:drop-shadow-[0_0_8px_rgba(22,163,74,0.6)]">
-        {value}
+        <CountUp value={value} delay={0.2} />
+        {suffix}
       </span>
     </div>
   );
