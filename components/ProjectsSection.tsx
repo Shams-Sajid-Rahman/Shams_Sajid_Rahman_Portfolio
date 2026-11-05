@@ -253,6 +253,27 @@ const COMPACT: Compact[] = [
 
 const MORE: { title: string; href: string; category: string; desc: string; tech: string[] }[] = [
   {
+    title: "Chest X-ray Assistant",
+    href: "https://github.com/Shams-Sajid-Rahman/medxray-assistant",
+    category: "Medical AI",
+    desc: "Pneumonia detection app built on a DenseNet121 transfer-learning classifier, reaching 91.2% accuracy and 0.975 AUC on the 624-image official test set. Shows Grad-CAM heatmaps of the regions behind each prediction and writes a short summary using RAG (Chroma + Gemini), with a template fallback if the LLM is down. Grad-CAM revealed shortcut learning on burned-in text markers, which is documented along with the limitations.",
+    tech: ["Python", "PyTorch", "Grad-CAM", "Chroma", "Gemini API", "Gradio", "Docker"],
+  },
+  {
+    title: "Sajsub Tech",
+    href: "https://github.com/Shams-Sajid-Rahman/Sajsub_Tech",
+    category: "Full-Stack E-Commerce Platform",
+    desc: "E-commerce platform with a storefront, an admin dashboard, and an AI shopping assistant. Customers get search with autocomplete, carts, wishlists, reviews, and checkout with SSLCommerz online payments, where every payment is verified server-side before an order is confirmed. Admins manage products, inventory, orders, refunds, and users. The Gemini-powered assistant answers product questions through read-only tools with personal details redacted. Backed by 195 automated tests.",
+    tech: ["React", "Vite", "Tailwind CSS", "Node.js", "Express", "PostgreSQL", "Prisma", "Gemini API"],
+  },
+  {
+    title: "IELTiva",
+    href: "https://github.com/Shams-Sajid-Rahman/IELTiva",
+    category: "AI-Assisted IELTS Prep Platform",
+    desc: "IELTS preparation platform built for students in Bangladesh, with international use planned later. It covers Listening and Reading practice, mock tests, and AI-assisted Writing and Speaking feedback, plus study plans, analytics, and prepaid packages. It's a TypeScript monorepo with a Next.js frontend and an Express API with a BullMQ worker, using PostgreSQL, Redis, and Cloudflare R2. Claude powers the AI feedback, and AI band scores stay hidden until they're checked against human-marked samples. Includes 367 automated tests across the API, UI components, and browser flows.",
+    tech: ["Next.js", "TypeScript", "Node.js", "Prisma", "PostgreSQL", "Redis", "BullMQ", "Gemini API"],
+  },
+  {
     title: "IELTS AI Tutor Pro",
     href: "https://huggingface.co/spaces/ShamsSajidRahman/IELTS-Tutor-Pro",
     category: "Conversational AI Agent",
