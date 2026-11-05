@@ -20,7 +20,7 @@ const PIPELINE = ["Data", "Preprocess", "Train", "Evaluate", "Publish"];
 const STATS = [
   { label: "CGPA, North South University", value: 3.35, decimals: 2, suffix: "/4.00" },
   { label: "IEEE publication", value: 1 },
-  { label: "Software Projects Built", value: 12 },
+  { label: "Software Projects Built", value: 20 },
   { label: "Research Projects", value: 2 },
   { label: "NSU ACM experience", value: 4, suffix: " yrs" },
 ];
